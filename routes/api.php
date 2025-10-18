@@ -16,12 +16,14 @@ use App\Http\Controllers\Api\Auth\RegisterUserController;
 use App\Http\Controllers\Api\Profile\FollowProfileController;
 use App\Http\Controllers\Api\Profile\ShowProfileController;
 use App\Http\Controllers\Api\Profile\UnfollowProfileController;
+use App\Http\Controllers\Api\Tags\ListTagsController;
 use App\Http\Controllers\Api\User\CurrentUserController;
 use App\Http\Controllers\Api\User\UpdateUserController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/users', RegisterUserController::class);
 Route::post('/users/login', LoginUserController::class);
+Route::get('/tags', ListTagsController::class);
 
 Route::middleware('auth.jwt.optional')->group(function (): void {
     Route::get('/articles', ListArticlesController::class);
