@@ -24,11 +24,26 @@
 # Tools / OS / IDE
 /.idea/
 /.vscode/
+/.fleet
+/.nova
+/.zed
 /.DS_Store
 Thumbs.db
+.phpactor.json
 
 # Composer / npm
 composer.lock
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+# Laravel build artifacts
+/public/build
+/public/hot
+/storage/pail
+.env.backup
+.env.production
+Homestead.json
+Homestead.yaml
+*.log
+/auth.json
