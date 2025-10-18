@@ -21,26 +21,34 @@ class ArticleResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $article = $this->resource->article;
-        $author = $this->resource->author;
+        return [
+            'article' => self::formatArticle($this->resource),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function formatArticle(ArticleData $data): array
+    {
+        $article = $data->article;
+        $author = $data->author;
 
         return [
-            'article' => [
-                'slug' => $article->slug,
-                'title' => $article->title,
-                'description' => $article->description,
-                'body' => $article->body,
-                'tagList' => $this->resource->tagList,
-                'createdAt' => $article->created_at?->toISOString(),
-                'updatedAt' => $article->updated_at?->toISOString(),
-                'favorited' => $this->resource->favorited,
-                'favoritesCount' => $this->resource->favoritesCount,
-                'author' => [
-                    'username' => $author->user->username,
-                    'bio' => $author->user->bio,
-                    'image' => $author->user->image,
-                    'following' => $author->following,
-                ],
+            'slug' => $article->slug,
+            'title' => $article->title,
+            'description' => $article->description,
+            'body' => $article->body,
+            'tagList' => $data->tagList,
+            'createdAt' => $article->created_at?->toISOString(),
+            'updatedAt' => $article->updated_at?->toISOString(),
+            'favorited' => $data->favorited,
+            'favoritesCount' => $data->favoritesCount,
+            'author' => [
+                'username' => $author->user->username,
+                'bio' => $author->user->bio,
+                'image' => $author->user->image,
+                'following' => $author->following,
             ],
         ];
     }

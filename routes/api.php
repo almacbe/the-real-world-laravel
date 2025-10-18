@@ -2,7 +2,11 @@
 
 use App\Http\Controllers\Api\Articles\CreateArticleController;
 use App\Http\Controllers\Api\Articles\DeleteArticleController;
+use App\Http\Controllers\Api\Articles\FavoriteArticleController;
+use App\Http\Controllers\Api\Articles\FeedArticlesController;
+use App\Http\Controllers\Api\Articles\ListArticlesController;
 use App\Http\Controllers\Api\Articles\ShowArticleController;
+use App\Http\Controllers\Api\Articles\UnfavoriteArticleController;
 use App\Http\Controllers\Api\Articles\UpdateArticleController;
 use App\Http\Controllers\Api\Auth\LoginUserController;
 use App\Http\Controllers\Api\Auth\RegisterUserController;
@@ -17,8 +21,8 @@ Route::post('/users', RegisterUserController::class);
 Route::post('/users/login', LoginUserController::class);
 
 Route::middleware('auth.jwt.optional')->group(function (): void {
+    Route::get('/articles', ListArticlesController::class);
     Route::get('/profiles/{username}', ShowProfileController::class);
-    Route::get('/articles/{slug}', ShowArticleController::class);
 });
 
 Route::middleware('auth.jwt')->group(function (): void {
@@ -27,7 +31,12 @@ Route::middleware('auth.jwt')->group(function (): void {
     Route::post('/profiles/{username}/follow', FollowProfileController::class);
     Route::delete('/profiles/{username}/follow', UnfollowProfileController::class);
 
+    Route::get('/articles/feed', FeedArticlesController::class);
     Route::post('/articles', CreateArticleController::class);
+    Route::post('/articles/{slug}/favorite', FavoriteArticleController::class);
     Route::put('/articles/{slug}', UpdateArticleController::class);
+    Route::delete('/articles/{slug}/favorite', UnfavoriteArticleController::class);
     Route::delete('/articles/{slug}', DeleteArticleController::class);
 });
+
+Route::middleware('auth.jwt.optional')->get('/articles/{slug}', ShowArticleController::class);

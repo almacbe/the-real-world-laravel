@@ -80,4 +80,67 @@ class ArticleRepository implements ArticleRepositoryInterface
     {
         return $article->favoritedBy()->count();
     }
+
+    public function listArticles(?string $tag, ?string $author, ?string $favoritedBy, int $limit, int $offset): array
+    {
+        $query = Article::query()
+            ->with(['author', 'tags'])
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->when($tag, fn ($q) => $q->whereHas('tags', fn ($tags) => $tags->where('name', $tag)))
+            ->when($author, fn ($q) => $q->whereHas('author', fn ($authors) => $authors->where('username', $author)))
+            ->when($favoritedBy, fn ($q) => $q->whereHas('favoritedBy', fn ($users) => $users->where('username', $favoritedBy)));
+
+        $count = (clone $query)->count();
+
+        $articles = $query
+            ->skip($offset)
+            ->take($limit)
+            ->get();
+
+        return [
+            'articles' => $articles,
+            'count' => $count,
+        ];
+    }
+
+    public function feedForUser(User $user, int $limit, int $offset): array
+    {
+        $followedIds = $user->following()->pluck('users.id');
+
+        if ($followedIds->isEmpty()) {
+            return [
+                'articles' => collect(),
+                'count' => 0,
+            ];
+        }
+
+        $query = Article::query()
+            ->with(['author', 'tags'])
+            ->whereIn('author_id', $followedIds)
+            ->orderByDesc('created_at')
+            ->orderByDesc('id');
+
+        $count = (clone $query)->count();
+
+        $articles = $query
+            ->skip($offset)
+            ->take($limit)
+            ->get();
+
+        return [
+            'articles' => $articles,
+            'count' => $count,
+        ];
+    }
+
+    public function favorite(Article $article, User $user): void
+    {
+        $article->favoritedBy()->syncWithoutDetaching([$user->getKey()]);
+    }
+
+    public function unfavorite(Article $article, User $user): void
+    {
+        $article->favoritedBy()->detach($user->getKey());
+    }
 }

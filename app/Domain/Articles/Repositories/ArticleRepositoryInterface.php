@@ -36,4 +36,18 @@ interface ArticleRepositoryInterface
     public function isFavoritedBy(Article $article, ?User $user): bool;
 
     public function favoritesCount(Article $article): int;
+
+    /**
+     * @return array{articles: \Illuminate\Support\Collection<int, Article>, count: int}
+     */
+    public function listArticles(?string $tag, ?string $author, ?string $favoritedBy, int $limit, int $offset): array;
+
+    /**
+     * @return array{articles: \Illuminate\Support\Collection<int, Article>, count: int}
+     */
+    public function feedForUser(User $user, int $limit, int $offset): array;
+
+    public function favorite(Article $article, User $user): void;
+
+    public function unfavorite(Article $article, User $user): void;
 }
