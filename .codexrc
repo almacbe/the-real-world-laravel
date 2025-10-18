@@ -1,0 +1,33 @@
+{
+  // Evita confirmaciones interactivas
+  "autoApprove": ["git", "composer", "php", "npm", "artisan"],
+
+  // Limita los comandos que Codex puede ejecutar
+  "allowedCommands": [
+    "git init",
+    "git add",
+    "git commit",
+    "git status",
+    "git log",
+    "composer install",
+    "composer dump-autoload",
+    "composer require",
+    "php artisan",
+    "php artisan migrate",
+    "php artisan serve",
+    "php artisan make:*",
+    "npm install",
+    "npm run dev",
+    "npm run build"
+  ],
+
+  // Evita confirmaciones globales o inesperadas
+  "safeMode": true,
+
+  // No preguntar nunca en comandos listados arriba
+  "requireApproval": false,
+
+  // Define el shell por defecto (opcional)
+  "shell": "/bin/bash"
+}
+
