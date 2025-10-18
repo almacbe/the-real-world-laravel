@@ -20,5 +20,12 @@ class UserRepository implements UserRepositoryInterface
     {
         return User::query()->where('username', $username)->first();
     }
-}
 
+    public function update(User $user, array $attributes): User
+    {
+        $user->fill($attributes);
+        $user->save();
+
+        return $user->refresh();
+    }
+}
