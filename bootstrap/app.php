@@ -11,7 +11,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->appendToGroup('api', [
+            \App\Http\Middleware\TransformTokenHeader::class,
+        ]);
+
+        $middleware->alias([
+            'auth.jwt' => \PHPOpenSourceSaver\JWTAuth\Http\Middleware\Authenticate::class,
+            'auth.jwt.optional' => \PHPOpenSourceSaver\JWTAuth\Http\Middleware\AuthenticateOptional::class,
+            'auth.jwt.refresh' => \PHPOpenSourceSaver\JWTAuth\Http\Middleware\RefreshToken::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
