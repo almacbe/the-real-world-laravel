@@ -1,0 +1,34 @@
+# Laravel & PHP
+/vendor/
+/node_modules/
+.env
+.env.*
+/bootstrap/cache/*
+/storage/*.key
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/public/storage
+/.phpunit.result.cache
+.phpunit.cache/
+/coverage/
+
+# Databases (sqlite/local)
+*.sqlite
+*.sqlite3
+*.db
+/database/*.sqlite
+/storage/database/*.sqlite
+
+# Tools / OS / IDE
+/.idea/
+/.vscode/
+/.DS_Store
+Thumbs.db
+
+# Composer / npm
+composer.lock
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
