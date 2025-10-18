@@ -5,6 +5,9 @@ use App\Http\Controllers\Api\Articles\DeleteArticleController;
 use App\Http\Controllers\Api\Articles\FavoriteArticleController;
 use App\Http\Controllers\Api\Articles\FeedArticlesController;
 use App\Http\Controllers\Api\Articles\ListArticlesController;
+use App\Http\Controllers\Api\Articles\ListCommentsController;
+use App\Http\Controllers\Api\Articles\AddCommentController;
+use App\Http\Controllers\Api\Articles\DeleteCommentController;
 use App\Http\Controllers\Api\Articles\ShowArticleController;
 use App\Http\Controllers\Api\Articles\UnfavoriteArticleController;
 use App\Http\Controllers\Api\Articles\UpdateArticleController;
@@ -23,6 +26,7 @@ Route::post('/users/login', LoginUserController::class);
 Route::middleware('auth.jwt.optional')->group(function (): void {
     Route::get('/articles', ListArticlesController::class);
     Route::get('/profiles/{username}', ShowProfileController::class);
+    Route::get('/articles/{slug}/comments', ListCommentsController::class);
 });
 
 Route::middleware('auth.jwt')->group(function (): void {
@@ -37,6 +41,9 @@ Route::middleware('auth.jwt')->group(function (): void {
     Route::put('/articles/{slug}', UpdateArticleController::class);
     Route::delete('/articles/{slug}/favorite', UnfavoriteArticleController::class);
     Route::delete('/articles/{slug}', DeleteArticleController::class);
+
+    Route::post('/articles/{slug}/comments', AddCommentController::class);
+    Route::delete('/articles/{slug}/comments/{commentId}', DeleteCommentController::class);
 });
 
 Route::middleware('auth.jwt.optional')->get('/articles/{slug}', ShowArticleController::class);

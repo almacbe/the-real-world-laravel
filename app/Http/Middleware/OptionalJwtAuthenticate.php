@@ -19,13 +19,22 @@ class OptionalJwtAuthenticate
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->bearerToken()) {
-            try {
-                $this->jwtAuth->setToken($request->bearerToken())->authenticate();
-            } catch (JWTException $exception) {
-                throw $exception;
-            }
+        $token = $request->bearerToken();
+
+        if (! $token) {
+            $request->setUserResolver(static fn () => null);
+
+            return $next($request);
         }
+
+        try {
+            $user = $this->jwtAuth->setToken($token)->authenticate();
+        } catch (JWTException $exception) {
+            throw $exception;
+        }
+
+        $request->setUserResolver(static fn () => $user);
+        auth()->setUser($user);
 
         return $next($request);
     }
