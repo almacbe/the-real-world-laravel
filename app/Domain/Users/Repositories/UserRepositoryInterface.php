@@ -16,4 +16,12 @@ interface UserRepositoryInterface
      * @param  array<string, mixed>  $attributes
      */
     public function update(User $user, array $attributes): User;
+
+    public function findByUsernameOrFail(string $username): User;
+
+    public function follow(User $follower, User $followed): void;
+
+    public function unfollow(User $follower, User $followed): void;
+
+    public function isFollowing(User $follower, User $followed): bool;
 }

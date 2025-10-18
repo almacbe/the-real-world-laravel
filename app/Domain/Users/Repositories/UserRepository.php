@@ -28,4 +28,24 @@ class UserRepository implements UserRepositoryInterface
 
         return $user->refresh();
     }
+
+    public function findByUsernameOrFail(string $username): User
+    {
+        return User::query()->where('username', $username)->firstOrFail();
+    }
+
+    public function follow(User $follower, User $followed): void
+    {
+        $follower->following()->syncWithoutDetaching([$followed->getKey()]);
+    }
+
+    public function unfollow(User $follower, User $followed): void
+    {
+        $follower->following()->detach($followed->getKey());
+    }
+
+    public function isFollowing(User $follower, User $followed): bool
+    {
+        return $follower->following()->whereKey($followed->getKey())->exists();
+    }
 }
