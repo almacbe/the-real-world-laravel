@@ -1,61 +1,90 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# RealWorld API – Laravel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Backend implementation of the [RealWorld](https://realworld-docs.netlify.app/docs/specs/backend/endpoints) specification built with Laravel 12 and JWT authentication.
 
-## About Laravel
+## Requirements
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.2+
+- Composer
+- Node.js 18+ (for Newman / optional asset tooling)
+- SQLite (default) or PostgreSQL 14+
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Quick Start
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+make install        # install dependencies, copy .env, generate key, migrate & seed
+make serve          # serve API at http://127.0.0.1:8001
+```
 
-## Learning Laravel
+The API exposes the standard RealWorld endpoints under `/api/*`. Authentication uses `Authorization: Token <jwt>` headers.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Common Tasks
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+| Command            | Description |
+|--------------------|-------------|
+| `make migrate`     | Run outstanding database migrations |
+| `make seed`        | Seed the reference RealWorld dataset |
+| `make test`        | Execute the PHPUnit feature suite |
+| `make cs`          | Run Laravel Pint (PSR-12 styling) |
+| `make stan`        | Run PHPStan (level 8) |
+| `make postman`     | Boot API locally and run the official Newman collection |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Corresponding Composer scripts are available (`composer app:test`, `composer app:stan`, etc.) for CI environments.
 
-## Laravel Sponsors
+## Database
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+SQLite is the default (`DB_CONNECTION=sqlite`). To use PostgreSQL, update `.env`:
 
-### Premium Partners
+```
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=realworld
+DB_USERNAME=your_user
+DB_PASSWORD=your_password
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Then recreate the schema:
 
-## Contributing
+```bash
+php artisan migrate:fresh --seed
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Seeding
 
-## Code of Conduct
+`php artisan db:seed` loads a sample dataset with:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Users: `jake`, `jane`, `john` (password: `demo1234`)
+- Articles, tags, favorites, follows, and comments matching the RealWorld examples
 
-## Security Vulnerabilities
+## Quality Gates & Testing
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- **Feature tests:** `make test`
+- **Static analysis:** `make stan`
+- **Code style:** `make cs`
+- **API contract (Newman):** `make postman`
+
+`make postman` starts a throwaway `php artisan serve` on port `8001`, waits until it is reachable, runs `npx newman` against the official Conduit collection (`tests/Postman/Conduit.postman_collection.json`), and then terminates the server.
+
+## Error Handling & CORS
+
+- All errors follow the RealWorld format: `{ "errors": [ { "message": string, "code": int } ] }` or validation errors grouped by field.
+- CORS is configured per spec: `Access-Control-Allow-Origin: *`, allowed headers `Content-Type, Authorization`, and allowed methods `GET, POST, PUT, DELETE, OPTIONS`.
+
+## JWT Auth
+
+JWTs are issued via `/api/users/login` and `/api/users`. Tokens must be supplied as `Authorization: Token <jwt>`.
+
+## Project Structure
+
+- `app/Domain` – Application actions, repositories, DTOs, and services (organized by bounded context)
+- `tests/Feature` – Full RealWorld coverage (auth, profiles, articles, comments, tags, error formatting, seeding)
+- `Makefile` – Developer ergonomics & CI entrypoints
+
+## API Reference
+
+Consult the [RealWorld API specification](https://docs.realworld.show/specifications/backend/endpoints/) for detailed endpoint payloads. This implementation mirrors those responses (including pagination, enveloped resources, and follow/favorite flags).
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT
