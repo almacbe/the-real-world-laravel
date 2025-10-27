@@ -1,5 +1,7 @@
 # RealWorld API – Laravel
 
+> This backend was generated and refined with the help of Codex AI assistance.
+
 Backend implementation of the [RealWorld](https://realworld-docs.netlify.app/docs/specs/backend/endpoints) specification built with Laravel 12 and JWT authentication.
 
 ## Requirements
