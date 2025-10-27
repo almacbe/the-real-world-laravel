@@ -66,6 +66,18 @@ php artisan migrate:fresh --seed
 
 `make postman` starts a throwaway `php artisan serve` on port `8001`, waits until it is reachable, runs `npx newman` against the official Conduit collection (`tests/Postman/Conduit.postman_collection.json`), and then terminates the server.
 
+### Manual Newman Run
+
+If you prefer running the collection yourself, the repository ships with `run-api-tests.sh` aligned with the upstream RealWorld helper:
+
+```bash
+php artisan migrate:fresh --seed                    # ensure a clean dataset
+php artisan serve --host=127.0.0.1 --port=8001 &    # start the API locally
+./run-api-tests.sh                                  # executes the Postman collection via Newman
+```
+
+The script accepts the same environment overrides as the reference version (`APIURL`, `USERNAME`, `EMAIL`, `PASSWORD`, `DELAY_REQUEST`) and forwards any extra arguments to Newman.
+
 ## Error Handling & CORS
 
 - All errors follow the RealWorld format: `{ "errors": [ { "message": string, "code": int } ] }` or validation errors grouped by field.
