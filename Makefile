@@ -42,6 +42,6 @@ postman: ## Execute Newman collection against local server
 		nc -z $(HOST) $(PORT) >/dev/null 2>&1 && break ; \
 		sleep 1 ; \
 	done ; \
-	npx --yes newman run tests/Postman/Conduit.postman_collection.json --env-var baseUrl=http://$(HOST):$(PORT) ; \
+	npx --yes newman run tests/Postman/Conduit.postman_collection.json --env-var APIURL=http://$(HOST):$(PORT) ; \
 	kill $$SERVER_PID ; \
 	wait $$SERVER_PID 2>/dev/null || true
